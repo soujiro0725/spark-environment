@@ -3,5 +3,5 @@ services:
     spark:
         image: sequenceiq/spark:latest
         volumes:
-            - .:/code
+            - ./code:/code
 
