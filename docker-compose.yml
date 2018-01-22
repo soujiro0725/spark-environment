@@ -1,7 +1,8 @@
 version: "3.3"
 services:
     spark:
-        image: sequenceiq/spark:latest
+        build: .
+        image: soichi777/docker-spark-with-sbt:v1
         volumes:
             - ./code:/code
 
