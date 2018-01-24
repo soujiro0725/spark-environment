@@ -1,0 +1,7 @@
+version: "3.3"
+services:
+    spark:
+        image: soichi777/docker-spark-dev
+        volumes:
+            - ./code:/code
+
