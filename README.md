@@ -1,4 +1,5 @@
-Spark with docker
+Spark Environment
 =====
-2018-01-21
 
+- Spark with jupyter notebook
+- Spark on Docker
