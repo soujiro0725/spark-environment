@@ -4,18 +4,21 @@
 import os
 import urllib
 from sklearn.datasets import load_svmlight_file
-import numpy as np
 from matplotlib import pyplot as plt
+import numpy as np
 
-def get_data():
-    url = "https://raw.githubusercontent.com/apache/spark/master/data/mllib/sample_libsvm_data.txt"
+GITHUB_HOST = "https://raw.githubusercontent.com/apache/spark/master/data/mllib/"
+BINOMIAL_DATA_URL = GITHUB_HOST + "sample_libsvm_data.txt"
+MULTICLASS_DATA_URL = GITHUB_HOST + "sample_multiclass_classification_data.txt"
+
+def get_data(url):
     filename = "data.txt"
     if not os.path.isfile(filename):
         urllib.request.urlretrieve(url, "{}".format(filename))
     data = load_svmlight_file(filename)
     return data[0], data[1]
 
-X, y = get_data()
+X, y = get_data(MULTICLASS_DATA_URL)
 print(X.indices)
 print(X.data)
 print(X.indptr)
