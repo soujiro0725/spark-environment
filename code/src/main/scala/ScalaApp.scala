@@ -1,5 +1,6 @@
-import org.apache.spark.SparkContext
+import org.apache.spark._
 import org.apache.spark.SparkContext._
+import org.apache.spark.sql.SparkSession
 
 /**
   * a simple spark app in Scala
@@ -7,30 +8,16 @@ import org.apache.spark.SparkContext._
 
 object ScalaApp {
   def main(args: Array[String]) {
-    val sc = new SparkContext("local[2]", "First Spark App")
-    val data = sc.textFile("data/UserPurchasedHistory.csv")
-      .map(line => line.split(","))
-      .map(purchaseRecord => (
-        purchaseRecord(0),
-        purchaseRecord(1),
-        purchaseRecord(2)
-      ))
-
-    val numPurchases = data.count()
-    val uniqueUsers = data.map{ case (user, product, price) => user }
-      .distinct()
-      .count()
-    val totalRevenue = data.map{ case (user, product, price) => price.toDouble  }
-      .sum()
-    val productsByPopularity = data
-      .map{ case (user, product, price) => (product, 1) }
-      .reduceByKey(_ + _)
-      .collect()
-      .sortBy(-_._2)
-    val mostPopular = productByPopularity(0)
-    println("totoal purchases: " + numPurchases)
-    println("unique users: " + uniqueUsers)
-    println("total revenuce: " + totalRevenue)
-    println("most popular product: % with %d purchases".format(mostPopular._1, mostPopular._2))
+    val configuration = new SparkConf()
+      .setAppName("simple app")
+      .setMaster("local")
+    val sc = new SparkContext(configuration)
+    val logFile = "/Users/soichi/Projects/spark-environment/README.md"
+    val spark = SparkSession.builder.appName("Simple Application").getOrCreate()
+    val logData = spark.read.textFile(logFile).cache()
+    val numAs = logData.filter(line => line.contains("a")).count()
+    val numBs = logData.filter(line => line.contains("b")).count()
+    println(s"Lines with a $numAs, Lines with b: $numBs")
+    spark.stop()
   }
 }
