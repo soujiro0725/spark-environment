@@ -10,15 +10,15 @@ import numpy as np
 GITHUB_HOST = "https://raw.githubusercontent.com/apache/spark/master/data/mllib/"
 BINOMIAL_DATA_URL = GITHUB_HOST + "sample_libsvm_data.txt"
 MULTICLASS_DATA_URL = GITHUB_HOST + "sample_multiclass_classification_data.txt"
-
-def get_data(url):
-    filename = "data.txt"
+DATA_FILENAME = "data.txt"
+    
+def get_data(url, filename):
     if not os.path.isfile(filename):
         urllib.request.urlretrieve(url, "{}".format(filename))
     data = load_svmlight_file(filename)
     return data[0], data[1]
 
-X, y = get_data(MULTICLASS_DATA_URL)
+X, y = get_data(MULTICLASS_DATA_URL, DATA_FILENAME)
 print(X.indices)
 print(X.data)
 print(X.indptr)
