@@ -19,9 +19,18 @@ def get_data(url, filename):
     return data[0], data[1]
 
 X, y = get_data(MULTICLASS_DATA_URL, DATA_FILENAME)
-print(X.indices)
-print(X.data)
-print(X.indptr)
+#print(X.indices)
+#print(X.data)
+#print(X.indptr)
+
+X_centered = X - X.mean(axis=0)
+U, s, Vt = np.linalg.svd(X_centered)
+c1 = Vt.T[:, 0]
+c2 = Vt.T[:, 1]
+print("c1 is:{}".format(c1))
+print("c2 is:{}".format(c2))
+W2 = Vt.T[:, :2]
+print("W2 is: {}".format(W2))
 
 # plt.scatter(X[0], X[1])
 # plt.show()
