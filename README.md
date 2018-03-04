@@ -4,6 +4,10 @@ Spark Environment
 - Spark with jupyter notebook
 - Spark on Docker
 
+Scala version 2.11.8
+Spark version 2.1.2
+sbt version 1.0.3
+
 ```
 # export SPARK_HOME=/Users/<path>/spark-2.1.0-hadoop2.7/
 git clone https://github.com/apache/incubator-toree.git
