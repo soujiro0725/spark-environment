@@ -5,3 +5,4 @@ sklearn
 pandas
 plotly
 seaborn
+pandas-datareader
