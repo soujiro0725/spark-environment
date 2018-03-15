@@ -32,10 +32,10 @@ object ScalaApp {
 
     model.clusterCenters.foreach(println)
 
-     val clusterLabelCount = labelsAndData.map { case (label, datum) =>
-       val cluster = model.predict(datum)
-       (cluster, label)
-     }.countByValue()
+    val clusterLabelCount = labelsAndData.map { case (label, datum) =>
+      val cluster = model.predict(datum)
+      (cluster, label)
+    }.countByValue()
 
     clusterLabelCount.toSeq.sorted.foreach { case ((cluster, label), count) =>
       println(f"$cluster%1s$label%18s$count%8s")
