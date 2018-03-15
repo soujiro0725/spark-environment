@@ -1,8 +1,8 @@
-import org.apache.spark._
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext._
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.ml.classification.MultilayerPerceptronClassifier
-import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
+import org.apache.spark.mllib.linalg._
+import org.apache.spark.mllib.clustering._
 
 /**
   * a simple spark app in Scala
@@ -10,33 +10,37 @@ import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 
 object ScalaApp {
   def main(args: Array[String]) {
-    val configuration = new SparkConf()
-      .setAppName("simple app")
-      .setMaster("local")
-    val sc = new SparkContext(configuration)
 
-    val spark = SparkSession.builder().getOrCreate()
+    val conf = new SparkConf()
+      .setMaster("local[2]")
+      .setAppName("spark-app-1")
+      .set("spark.executor.memory", "14g")
+      .set("spark.driver.memory", "14g")
+    val sc = new SparkContext(conf)
 
-    val data = spark.read.format("libsvm")
-      .load("/Users/soichi/Projects/spark-environment/code/data/sample_multiclass_classification_data.txt")
+    val rawData = sc.textFile("/Users/gsx/Projects/spark-environment/data/kddcup.data")
+    val labelsAndData = rawData.map{ line =>
+      val buffer = line.split(',').toBuffer
+      buffer.remove(1,3)
+      val label = buffer.remove(buffer.length-1)
+      val vector = Vectors.dense(buffer.map(_.toDouble).toArray)
+      (label, vector)
+    }
+    val data = labelsAndData.values.cache()
+    val kmeans = new KMeans()
+    val model = kmeans.run(data)
 
-    val splits = data.randomSplit(Array(0.6, 0.4), seed = 1234L)
-    val train = splits(0)
-    val test = splits(1)
-    val layers = Array[Int](4, 5, 4, 3)
+    model.clusterCenters.foreach(println)
 
-    val trainer = new MultilayerPerceptronClassifier()
-      .setLayers(layers)
-      .setBlockSize(128)
-      .setSeed(1234L)
-      .setMaxIter(100)
+     val clusterLabelCount = labelsAndData.map { case (label, datum) =>
+       val cluster = model.predict(datum)
+       (cluster, label)
+     }.countByValue()
 
-    val model = trainer.fit(train)
-    val result = model.transform(test)
-    val predictionAndLabels = result.select("prediction", "label")
-    val evaluator = new MulticlassClassificationEvaluator()
-      .setMetricName("accuracy")
+    clusterLabelCount.toSeq.sorted.foreach { case ((cluster, label), count) =>
+      println(f"$cluster%1s$label%18s$count%8s")
+    }
 
-    println("test set accuracy = " + evaluator.evaluate(predictionAndLabels))
+    sc.stop()
   }
 }
