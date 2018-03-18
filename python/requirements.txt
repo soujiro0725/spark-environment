@@ -6,3 +6,6 @@ pandas
 plotly
 seaborn
 pandas-datareader
+keras
+tensorflow
+
